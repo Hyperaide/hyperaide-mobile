@@ -47,11 +47,6 @@ export default function App() {
     registerForPushNotificationsAsync().then(token => setPushToken(token));
   }, []);
 
-  if (pushToken == null) {
-    return null;
-    // Add a splash or loading screen here
-  }
-
   const webViewInjectedJavaScript = `
       // Intercept requests and append the push token as a query parameter
       const originalFetch = fetch;
@@ -66,12 +61,26 @@ export default function App() {
       true;
     `;
 
+  const handleMessage = async (event) => {
+    const data = event.nativeEvent.data;
+
+    if (data == 'ask_notification_permisssions') {
+      const token = await Notifications.requestPermissionsAsync();
+
+      if (token) {
+        this.webref.injectJavaScript(`window.postMessage({ type: 'push_token', token: '${token}' }, '*')`);
+      }
+    }
+  }
+
   return (
     <View style={{ flex: 1, backgroundColor: statusbar_background_color }}>
       <WebView
+        ref={(r) => (this.webref = r)}
         style={{ flex: 1, backgroundColor: statusbar_background_color, marginTop: Constants.statusBarHeight }}
         source={{ uri: `${url}?push_token=${pushToken}` }}
         injectedJavaScript={webViewInjectedJavaScript}
+        onMessage={handleMessage}
       />
       <StatusBar style={statusbar_content_style} backgroundColor={statusbar_background_color} />
     </View>
