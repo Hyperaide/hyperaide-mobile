@@ -39,47 +39,27 @@ async function registerForPushNotificationsAsync() {
   return token;
 }
 
-export default function App() {
-  const { url, statusbar_background_color, statusbar_content_style } = config;
-  const [pushToken, setPushToken] = useState(null);
+async function handleMessage(event) {
+  const data = event.nativeEvent.data;
 
-  useEffect(() => {
-    registerForPushNotificationsAsync().then(token => setPushToken(token));
-  }, []);
+  if (data == 'ask_notification_permisssions') {
+    const token = await Notifications.requestPermissionsAsync();
 
-  const webViewInjectedJavaScript = `
-      // Intercept requests and append the push token as a query parameter
-      const originalFetch = fetch;
-      fetch = function(input, init) {
-        if (typeof input === 'string') {
-          const url = new URL(input);
-          url.searchParams.append('push_token', ${JSON.stringify(pushToken)});
-          input = url.toString();
-        }
-        return originalFetch(input, init);
-      };
-      true;
-    `;
-
-  const handleMessage = async (event) => {
-    const data = event.nativeEvent.data;
-
-    if (data == 'ask_notification_permisssions') {
-      const token = await Notifications.requestPermissionsAsync();
-
-      if (token) {
-        this.webref.injectJavaScript(`window.postMessage({ type: 'push_token', token: '${token}' }, '*')`);
-      }
+    if (token) {
+      this.webref.injectJavaScript(`window.postMessage({ type: 'push_token', token: '${token}' }, '*')`);
     }
   }
+}
+
+export default function App() {
+  const { url, statusbar_background_color, statusbar_content_style } = config;
 
   return (
     <View style={{ flex: 1, backgroundColor: statusbar_background_color }}>
       <WebView
         ref={(r) => (this.webref = r)}
         style={{ flex: 1, backgroundColor: statusbar_background_color, marginTop: Constants.statusBarHeight }}
-        source={{ uri: `${url}?push_token=${pushToken}` }}
-        injectedJavaScript={webViewInjectedJavaScript}
+        source={{ uri: url }}
         onMessage={handleMessage}
       />
       <StatusBar style={statusbar_content_style} backgroundColor={statusbar_background_color} />
