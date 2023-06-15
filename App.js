@@ -13,12 +13,15 @@ async function registerForPushNotificationsAsync() {
   if (Device.isDevice) {
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
-    if (existingStatus !== 'granted') {
+    if (existingStatus === 'denied') {
+      Linking.openSettings();
+    }
+    else if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
       finalStatus = status;
     }
-    if (finalStatus !== 'granted') {
-      alert('Failed to get push token for push notification!');
+    else if (finalStatus !== 'granted') {
+      console.log('Failed to get push token for push notification!');
       return;
     }
     token = (await Notifications.getDevicePushTokenAsync()).data;
@@ -43,11 +46,8 @@ async function handleMessage(event) {
   const data = event.nativeEvent.data;
 
   if (data == 'ask_notification_permisssions') {
-    const token = await Notifications.requestPermissionsAsync();
-
-    if (token) {
-      this.webref.injectJavaScript(`window.postMessage({ type: 'push_token', token: '${token}' }, '*')`);
-    }
+    await registerForPushNotificationsAsync()
+      .then((token) => this.webref.injectJavaScript(`window.postMessage({ type: 'push_token', token: '${token}' }, '*')`));
   }
 }
 
