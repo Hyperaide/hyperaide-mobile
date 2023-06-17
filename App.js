@@ -52,17 +52,18 @@ async function handleMessage(event) {
 }
 
 export default function App() {
-  const { url, statusbar_background_color, statusbar_content_style } = config;
+  const { url, statusbarBackgroundColor, statusbarContentStyle, customUserAgent } = config;
 
   return (
-    <View style={{ flex: 1, backgroundColor: statusbar_background_color }}>
+    <View style={{ flex: 1, backgroundColor: statusbarBackgroundColor }}>
       <WebView
+        userAgent={customUserAgent}
         ref={(r) => (this.webref = r)}
-        style={{ flex: 1, backgroundColor: statusbar_background_color, marginTop: Constants.statusBarHeight }}
+        style={{ flex: 1, backgroundColor: statusbarBackgroundColor, marginTop: Constants.statusBarHeight }}
         source={{ uri: url }}
         onMessage={handleMessage}
       />
-      <StatusBar style={statusbar_content_style} backgroundColor={statusbar_background_color} />
+      <StatusBar style={statusbarContentStyle} backgroundColor={statusbarBackgroundColor} />
     </View>
   );
 }
