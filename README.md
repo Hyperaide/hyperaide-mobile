@@ -5,9 +5,10 @@ Welcome to Expo-Starter, a handy template for a webview Expo app. Let's get you 
 To begin, simply update the `config.js` file with your desired settings. Here's a sample configuration to help you out:
 ```javascript
 export default {
-  url: 'http://localhost:3000/',
-  statusbar_background_color: '#000000',
-  statusbar_content_style: 'light', // Options: 'light' or 'dark'
+  url: 'https://29093caccac5.ngrok.app',
+  statusbarBackgroundColor: '#000000',
+  statusbarContentStyle: 'light', // 'light' or 'dark'
+  customUserAgent: null,
 }
 ```
 
