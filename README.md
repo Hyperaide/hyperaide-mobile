@@ -5,10 +5,21 @@ Welcome to Expo-Starter, a handy template for a webview Expo app. Let's get you 
 To begin, simply update the `config.js` file with your desired settings. Here's a sample configuration to help you out:
 ```javascript
 export default {
-  url: 'https://29093caccac5.ngrok.app',
-  statusbarBackgroundColor: '#000000',
-  statusbarContentStyle: 'light', // 'light' or 'dark'
+  url: 'https://google.com',
   customUserAgent: null,
+
+  // Status bar settings
+  statusBar: {
+    backgroundColor: '#ffffff',
+    contentStyle: 'dark', // 'light' or 'dark'
+  },
+
+  // What the user sees when there is no internet connection
+  noNetworkScreen: {
+    message: 'No Internet Connection',
+    textColor: '#000000',
+    backgroundColor: '#ffffff',
+  },
 }
 ```
 
